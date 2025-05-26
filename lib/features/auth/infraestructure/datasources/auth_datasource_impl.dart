@@ -7,15 +7,36 @@ class AuthDatasourceImpl extends AuthDatasource {
   final dio = Dio(
     BaseOptions(
       baseUrl: Environment.apiUrl,
-      connectTimeout: const Duration(seconds: 5), // Tiempo para establecer la conexión
+      connectTimeout:
+          const Duration(seconds: 5), // Tiempo para establecer la conexión
       receiveTimeout: const Duration(seconds: 3), // Tiempo para recibir datos
     ),
   );
 
   @override
-  Future<User> checkAuthStatus(String token) {
-    // TODO: implement checkAuthStatus
-    throw UnimplementedError();
+  Future<User> checkAuthStatus(String token) async {
+    try {
+      final response = await dio.get('/auth/check-status',
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      final user = UserMapper.userJsonToEntity(response.data);
+      return user;
+    } on DioException catch (e) {
+      // print(e);
+      if (e.response?.statusCode == 401) {
+        throw CustomError('Token incorrecto');
+      }
+
+       if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout) {
+        throw CustomError(
+            'No se pudo conectar al servidor. Verifica tu conexión o intenta más tarde.');
+      }
+
+      throw Exception();
+    } catch (e) {
+      throw Exception();
+    }
   }
 
   @override
