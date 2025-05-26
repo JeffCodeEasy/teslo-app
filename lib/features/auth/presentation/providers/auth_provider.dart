@@ -19,10 +19,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final user = await authRepository.login(email, password);
       _setLoggedUser(user);
-
     } on CustomError catch (e) {
       logout(e.message);
-      
     } catch (e) {
       logout('Error no controlado');
     }
@@ -39,6 +37,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       user: user,
       authStatus: AuthStatus.authenticated,
+      errorMessage: '',
     );
   }
 

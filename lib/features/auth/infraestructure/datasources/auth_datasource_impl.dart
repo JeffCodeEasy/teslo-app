@@ -7,6 +7,8 @@ class AuthDatasourceImpl extends AuthDatasource {
   final dio = Dio(
     BaseOptions(
       baseUrl: Environment.apiUrl,
+      connectTimeout: const Duration(seconds: 5), // Tiempo para establecer la conexión
+      receiveTimeout: const Duration(seconds: 3), // Tiempo para recibir datos
     ),
   );
 
@@ -31,11 +33,15 @@ class AuthDatasourceImpl extends AuthDatasource {
         throw CustomError(
             e.response?.data['message'] ?? 'Credenciales Incorrectas');
       }
-      if (e.type == DioExceptionType.connectionTimeout) {
-        throw CustomError('Revisar conexión a internet');
+      // *** Nuevo: Manejar errores de conexión ***
+      // DioExceptionType.connectionError para problemas generales de red (DNS, host no encontrado, etc.)
+      // DioExceptionType.connectionTimeout si la conexión se estableció pero no se pudo enviar/recibir en el tiempo.
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout) {
+        throw CustomError(
+            'No se pudo conectar al servidor. Verifica tu conexión o intenta más tarde.');
       }
       throw Exception();
-      
     } catch (e) {
       throw Exception();
     }
