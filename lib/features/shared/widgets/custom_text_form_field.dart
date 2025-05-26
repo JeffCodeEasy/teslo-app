@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 
-class CustomTextFormField extends StatelessWidget {
+class CustomTextFormField extends StatefulWidget {
 
   final String? label;
   final String? hint;
@@ -21,6 +21,27 @@ class CustomTextFormField extends StatelessWidget {
     this.onChanged, 
     this.validator, 
   });
+
+  @override
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
+}
+
+class _CustomTextFormFieldState extends State<CustomTextFormField> {
+
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscureText;
+  }
+
+  void _toggleObscureText() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +69,10 @@ class CustomTextFormField extends StatelessWidget {
         ]
       ),
       child: TextFormField(
-        onChanged: onChanged,
-        validator: validator,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
+        onChanged: widget.onChanged,
+        validator: widget.validator,
+        obscureText: _obscureText,
+        keyboardType: widget.keyboardType,
         style: const TextStyle( fontSize: 16, color: Colors.black54 ),
         decoration: InputDecoration(
           floatingLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
@@ -60,11 +81,20 @@ class CustomTextFormField extends StatelessWidget {
           errorBorder: border.copyWith( borderSide: const BorderSide( color: Colors.transparent )),
           focusedErrorBorder: border.copyWith( borderSide: const BorderSide( color: Colors.transparent )),
           isDense: true,
-          label: label != null ? Text(label!) : null,
-          hintText: hint,
-          errorText: errorMessage,
+          label: widget.label != null ? Text(widget.label!) : null,
+          hintText: widget.hint,
+          errorText: widget.errorMessage,
           focusColor: colors.primary,
           // icon: Icon( Icons.supervised_user_circle_outlined, color: colors.primary, )
+          suffixIcon: widget.obscureText
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                  onPressed: _toggleObscureText,
+                )
+              : null,
         ),
       ),
     );
