@@ -80,6 +80,7 @@ class _LoginForm extends ConsumerWidget {
           CustomTextFormField(
             label: 'Correo',
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             onChanged: (value) =>
                 ref.read(loginFormProvider.notifier).onEmailChange(value),
             errorMessage:
@@ -91,6 +92,7 @@ class _LoginForm extends ConsumerWidget {
             obscureText: true,
             onChanged: (value) =>
                 ref.read(loginFormProvider.notifier).onPasswordChanged(value),
+            onFieldSubmitted: (_) => ref.read(loginFormProvider.notifier).onFormSubmit(),
             errorMessage:
                 loginForm.isFormPosted ? loginForm.password.errorMessage : null,
           ),
