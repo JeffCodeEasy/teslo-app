@@ -27,6 +27,7 @@ class ProductNotifier extends StateNotifier<ProductState> {
       state = state.copyWith(
         id: product.id,
         isLoading: false,
+        product: product,
       );
     } catch (e) {
       print(e);
