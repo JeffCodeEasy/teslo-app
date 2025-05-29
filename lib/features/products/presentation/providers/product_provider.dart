@@ -4,7 +4,6 @@ import 'package:teslo_shop/features/products/presentation/providers/products_rep
 
 final productProvider = StateNotifierProvider.autoDispose
     .family<ProductNotifier, ProductState, String>((ref, productId) {
-  
   final productsRepository = ref.watch(productsRepositoryProvider);
 
   return ProductNotifier(
@@ -17,9 +16,22 @@ class ProductNotifier extends StateNotifier<ProductState> {
   ProductNotifier({
     required this.productsRepository,
     required String productId,
-  }) : super(ProductState(id: productId));
+  }) : super(ProductState(id: productId)) {
+    loadProduct();
+  }
 
-  Future<void> loadProduct() async {}
+  Future<void> loadProduct() async {
+    try {
+      final product = await productsRepository.getProductById(state.id);
+
+      state = state.copyWith(
+        id: product.id,
+        isLoading: false,
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 }
 
 class ProductState {
